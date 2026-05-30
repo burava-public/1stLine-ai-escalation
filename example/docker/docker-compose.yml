@@ -1,0 +1,28 @@
+services:
+  ai-escalation-controller:
+    image: firstline-ai-escalation-controller:with-tools
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+      args:
+        CONTROLLER_BASE_IMAGE: ${CONTROLLER_BASE_IMAGE}
+    init: true
+    ports:
+      - "4077:4077"
+    env_file:
+      - ../../.env
+    environment:
+      FIRSTLINE_AI_ESCALATION_CONTROLLER_CONFIG: /config/controller.config.json
+      FIRSTLINE_AI_ESCALATION_CONTROLLER_WORKSPACE_ROOT: /workspace/assignments
+      OPENCODE_CONFIG: /opencode/opencode.json
+      OPENCODE_MODEL: ${OPENCODE_MODEL}
+      OPENCODE_SMALL_MODEL: ${OPENCODE_SMALL_MODEL}
+      OPENCODE_DEFAULT_AGENT: ${OPENCODE_DEFAULT_AGENT:-firstline-concierge}
+    volumes:
+      - ../config:/config:ro
+      - ../opencode:/opencode:ro
+      - ../../assignments:/workspace/assignments
+      - opencode-data:/home/node/.local/share/opencode
+
+volumes:
+  opencode-data:

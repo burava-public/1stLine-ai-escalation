@@ -1,0 +1,36 @@
+{
+	"$schema": "https://opencode.ai/config.json",
+	"model": "{env:OPENCODE_MODEL}",
+	"small_model": "{env:OPENCODE_SMALL_MODEL}",
+	"agent": {
+		"concierge": {
+			"description": "Default 1stLine AI escalation coordinator.",
+			"mode": "primary",
+			"prompt": "{file:./agents/firstline-concierge.md}",
+			"temperature": 0.1
+		}
+	},
+	"mcp": {
+		"firstline": {
+			"type": "remote",
+			"url": "{env:FIRSTLINE_MCP_URL}",
+			"enabled": true,
+			"oauth": false,
+			"timeout": 10000,
+			"headers": {
+				"Authorization": "Bearer {env:FIRSTLINE_API_TOKEN}",
+				"X-Org-Context": "{env:FIRSTLINE_ORG_CONTEXT}"
+			}
+		}
+	},
+	"tools": {
+		"firstline_*": false,
+		"firstline_get_*": true,
+		"firstline_list_*": true
+	},
+	"permission": {
+		"firstline_*": "deny",
+		"firstline_get_*": "allow",
+		"firstline_list_*": "allow"
+	}
+}

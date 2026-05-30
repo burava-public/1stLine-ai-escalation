@@ -1,0 +1,80 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ai-escalation-controller-config
+  namespace: ai-escalation
+  labels:
+    app: ai-escalation-controller
+data:
+  config.json: |
+    {
+      "controllerId": "customer-controller-001",
+      "workspaceRoot": "/workspace/assignments",
+      "pollIntervalMs": 1000,
+      "assignmentTimeoutMs": 1800000,
+      "http": {
+        "enabled": true,
+        "host": "0.0.0.0",
+        "port": 4077
+      },
+      "firstline": {
+        "baseUrl": "https://1stline.burava.com",
+        "mailboxWebSocketUrl": "wss://1stline.burava.com/api/ai-escalation/mailbox",
+        "tokenEnv": "FIRSTLINE_AI_ESCALATION_CONTROLLER_TOKEN",
+        "taskPathTemplate": "/api/ai-escalation/assignments/{assignmentUid}/task",
+        "completePathTemplate": "/api/ai-escalation/assignments/{assignmentUid}/complete",
+        "configPathTemplate": "/api/ai-escalation/controllers/{controllerId}/config"
+      },
+      "opencode": {
+        "enabled": true,
+        "command": "opencode",
+        "host": "127.0.0.1",
+        "portRangeStart": 4099,
+        "portRangeEnd": 4199,
+        "startupTimeoutMs": 15000,
+        "healthIntervalMs": 5000,
+        "taskTimeoutMs": 1800000
+      },
+      "mcp": {
+        "requiredServers": ["firstline"],
+        "checkCommand": "opencode",
+        "checkArgs": ["mcp", "list"]
+      }
+    }
+  opencode.json: |
+    {
+      "$schema": "https://opencode.ai/config.json",
+      "model": "{env:OPENCODE_MODEL}",
+      "small_model": "{env:OPENCODE_SMALL_MODEL}",
+      "agent": {
+        "build": {
+          "description": "Default 1stLine AI escalation coordinator.",
+          "mode": "primary",
+          "prompt": "{file:./agents/firstline-concierge.md}",
+          "temperature": 0.1
+        }
+      },
+      "mcp": {
+        "firstline": {
+          "type": "remote",
+          "url": "{env:FIRSTLINE_MCP_URL}",
+          "enabled": true,
+          "oauth": false,
+          "timeout": 10000,
+          "headers": {
+            "Authorization": "Bearer {env:FIRSTLINE_API_TOKEN}",
+            "X-Org-Context": "{env:FIRSTLINE_ORG_CONTEXT}"
+          }
+        }
+      },
+      "tools": {
+        "firstline_*": false,
+        "firstline_get_*": true,
+        "firstline_list_*": true
+      },
+      "permission": {
+        "firstline_*": "deny",
+        "firstline_get_*": "allow",
+        "firstline_list_*": "allow"
+      }
+    }

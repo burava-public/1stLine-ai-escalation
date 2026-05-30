@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-escalation-controller
+  namespace: ai-escalation
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ai-escalation-controller
+  template:
+    metadata:
+      labels:
+        app: ai-escalation-controller
+    spec:
+      containers:
+        - name: controller
+          image: ghcr.io/<your-org-or-username>/1stline-ai-escalation-controller-with-tools:latest
+          imagePullPolicy: Always
+          env:
+            - name: FIRSTLINE_AI_ESCALATION_CONTROLLER_CONFIG
+              value: /config/config.json
+            - name: FIRSTLINE_AI_ESCALATION_CONTROLLER_WORKSPACE_ROOT
+              value: /workspace/assignments
+            - name: OPENCODE_CONFIG
+              value: /opencode/opencode.json
+            - name: FIRSTLINE_BASE_URL
+              value: https://1stline.burava.com
+            - name: FIRSTLINE_MAILBOX_WEBSOCKET_URL
+              value: wss://1stline.burava.com/api/ai-escalation/mailbox
+            - name: FIRSTLINE_AI_ESCALATION_CONTROLLER_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: ai-escalation-controller-secrets
+                  key: FIRSTLINE_AI_ESCALATION_CONTROLLER_TOKEN
+            - name: FIRSTLINE_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: ai-escalation-controller-secrets
+                  key: FIRSTLINE_API_TOKEN
+            - name: FIRSTLINE_ORG_CONTEXT
+              valueFrom:
+                secretKeyRef:
+                  name: ai-escalation-controller-secrets
+                  key: FIRSTLINE_ORG_CONTEXT
+            - name: FIRSTLINE_MCP_URL
+              valueFrom:
+                secretKeyRef:
+                  name: ai-escalation-controller-secrets
+                  key: FIRSTLINE_MCP_URL
+            - name: OPENCODE_MODEL
+              valueFrom:
+                secretKeyRef:
+                  name: ai-escalation-controller-secrets
+                  key: OPENCODE_MODEL
+            - name: OPENCODE_SMALL_MODEL
+              valueFrom:
+                secretKeyRef:
+                  name: ai-escalation-controller-secrets
+                  key: OPENCODE_SMALL_MODEL
+            - name: OPENCODE_DEFAULT_AGENT
+              value: firstline-concierge
+          ports:
+            - containerPort: 4077
+              name: http
+          volumeMounts:
+            - name: config
+              mountPath: /config/config.json
+              subPath: config.json
+              readOnly: true
+            - name: config
+              mountPath: /opencode/opencode.json
+              subPath: opencode.json
+              readOnly: true
+            - name: assignments
+              mountPath: /workspace/assignments
+      volumes:
+        - name: config
+          configMap:
+            name: ai-escalation-controller-config
+        - name: assignments
+          emptyDir: {}

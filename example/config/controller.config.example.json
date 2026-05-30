@@ -1,0 +1,34 @@
+{
+	"controllerId": "customer-controller-001",
+	"workspaceRoot": "./assignments",
+	"pollIntervalMs": 1000,
+	"assignmentTimeoutMs": 1800000,
+	"http": {
+		"enabled": true,
+		"host": "0.0.0.0",
+		"port": 4077
+	},
+	"firstline": {
+		"baseUrl": "https://1stline.burava.com",
+		"mailboxWebSocketUrl": "wss://1stline.burava.com/api/ai-escalation/mailbox",
+		"tokenEnv": "FIRSTLINE_AI_ESCALATION_CONTROLLER_TOKEN",
+		"taskPathTemplate": "/api/ai-escalation/assignments/{assignmentUid}/task",
+		"completePathTemplate": "/api/ai-escalation/assignments/{assignmentUid}/complete",
+		"configPathTemplate": "/api/ai-escalation/controllers/{controllerId}/config"
+	},
+	"opencode": {
+		"enabled": true,
+		"command": "opencode",
+		"host": "127.0.0.1",
+		"portRangeStart": 4099,
+		"portRangeEnd": 4199,
+		"startupTimeoutMs": 15000,
+		"healthIntervalMs": 5000,
+		"taskTimeoutMs": 1800000
+	},
+	"mcp": {
+		"requiredServers": ["firstline"],
+		"checkCommand": "opencode",
+		"checkArgs": ["mcp", "list"]
+	}
+}

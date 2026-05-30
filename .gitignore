@@ -1,0 +1,12 @@
+node_modules/
+dist/
+assignments/
+opencode/data/
+.env
+.env.local
+.tmp/
+*.log
+controller.config.json
+secret.yaml
+opencode.json
+docker-compose.local.yml
