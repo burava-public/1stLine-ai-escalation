@@ -10,6 +10,7 @@ data:
     {
       "controllerId": "customer-controller-001",
       "workspaceRoot": "/workspace/assignments",
+      "warm_opencode_servers": 1,
       "pollIntervalMs": 1000,
       "assignmentTimeoutMs": 1800000,
       "http": {

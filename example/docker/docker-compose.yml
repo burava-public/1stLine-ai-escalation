@@ -18,6 +18,7 @@ services:
       OPENCODE_MODEL: ${OPENCODE_MODEL}
       OPENCODE_SMALL_MODEL: ${OPENCODE_SMALL_MODEL}
       OPENCODE_DEFAULT_AGENT: ${OPENCODE_DEFAULT_AGENT:-firstline-concierge}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
     volumes:
       - ../config:/config:ro
       - ../opencode:/opencode:ro
